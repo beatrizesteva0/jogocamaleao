@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camaleão</title>
+
+<style>
+
+body{
+margin:0;
+padding:20px;
+font-family:Arial,Helvetica,sans-serif;
+background:#111827;
+color:white;
+max-width:700px;
+margin:auto;
+}
+
+h1,h2{
+text-align:center;
+}
+
+.card{
+background:#1f2937;
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+}
+
+input,select,button{
+width:100%;
+padding:14px;
+margin-top:10px;
+margin-bottom:10px;
+font-size:18px;
+border:none;
+border-radius:10px;
+}
+
+input,select{
+background:#374151;
+color:white;
+}
+
+button{
+background:#22c55e;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+opacity:.9;
+}
+
+.hidden{
+display:none;
+}
+
+#palavra{
+font-size:42px;
+font-weight:bold;
+text-align:center;
+margin:20px 0;
+}
+
+#categoria{
+font-size:22px;
+text-align:center;
+opacity:.8;
+}
+
+#nomeAtual{
+font-size:38px;
+text-align:center;
+margin:40px 0;
+color:#38bdf8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="setup">
+
+<h1>🦎 Camaleão</h1>
+
+<div class="card">
+
+<h2>Jogadores</h2>
+
+<select id="qtd">
+<option>3</option>
+<option selected>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+</select>
+
+<div id="nomes"></div>
+
+</div>
+
+<div class="card">
+
+<h2>Categorias</h2>
+
+<label><input type="checkbox" class="cat" value="🍕 Comidas" checked> 🍕 Comidas</label><br>
+<label><input type="checkbox" class="cat" value="🌍 Lugares" checked> 🌍 Lugares</label><br>
+<label><input type="checkbox" class="cat" value="📦 Objetos" checked> 📦 Objetos</label><br>
+<label><input type="checkbox" class="cat" value="🐶 Animais" checked> 🐶 Animais</label><br>
+<label><input type="checkbox" class="cat" value="⚽ Esportes" checked> ⚽ Esportes</label><br>
+<label><input type="checkbox" class="cat" value="🎬 Filmes" checked> 🎬 Filmes</label><br>
+<label><input type="checkbox" class="cat" value="📺 Séries" checked> 📺 Séries</label><br>
+<label><input type="checkbox" class="cat" value="💻 Tecnologia" checked> 💻 Tecnologia</label><br>
+<label><input type="checkbox" class="cat" value="🚗 Transportes" checked> 🚗 Transportes</label><br>
+<label><input type="checkbox" class="cat" value="👔 Profissões" checked> 👔 Profissões</label>
+
+</div>
+
+<button onclick="iniciar()">
+
+COMEÇAR
+
+</button>
+
+</div>
+
+<div id="passar" class="hidden">
+
+<h2>Passe o celular para</h2>
+
+<div id="nomeAtual"></div>
+
+<button onclick="mostrar()">
+
+MOSTRAR
+
+</button>
+
+</div>
+
+<div id="ver" class="hidden">
+
+<div id="categoria"></div>
+
+<div id="palavra"></div>
+
+<button onclick="proximo()">
+
+PRÓXIMO
+
+</button>
+
+</div>
+
+<div id="fim" class="hidden">
+
+<h2>Todos já visualizaram.</h2>
+
+<h1 id="inicioRodada"></h1>
+
+<button onclick="novaRodada()">
+
+Nova rodada
+
+</button>
+
+</div>
+
+<script>
+
+const banco = {
+
+"🍕 Comidas":[
+"Pizza","Hambúrguer","Lasanha","Sushi","Coxinha","Pastel","Feijoada","Macarrão","Arroz","Feijão",
+"Churrasco","Sorvete","Chocolate","Bolo","Torta","Pudim","Açaí","Pão","Queijo","Ovo",
+"Batata Frita","Lanche","Esfiha","Kibe","Yakisoba","Risoto","Panqueca","Brigadeiro","Cuscuz","Salada"
+],
+
+"🌍 Lugares":[
+"Praia","Cinema","Hospital","Shopping","Escola","Parque","Aeroporto","Hotel","Museu","Castelo",
+"Restaurante","Farmácia","Igreja","Mercado","Padaria","Academia","Biblioteca","Zoológico","Teatro","Estádio",
+"Banco","Fazenda","Floresta","Montanha","Deserto","Ilha","Praça","Rodoviária","Universidade","Aquário"
+],
+
+"📦 Objetos":[
+"Celular","Relógio","Livro","Caneta","Lápis","Tesoura","Panela","Chave","Escova","Cadeira",
+"Mesa","Controle","Notebook","Televisão","Ventilador","Geladeira","Fogão","Colher","Garfo","Faca",
+"Óculos","Espelho","Mochila","Carteira","Mouse","Teclado","Martelo","Parafuso","Lanterna","Guarda-Chuva"
+],
+
+"🐶 Animais":[
+"Cachorro","Gato","Leão","Elefante","Girafa","Macaco","Cobra","Tubarão","Pinguim","Jacaré",
+"Crocodilo","Tigre","Lobo","Raposa","Urso","Coelho","Cavalo","Vaca","Porco","Galinha",
+"Águia","Coruja","Papagaio","Golfinho","Baleia","Camelo","Zebra","Onça","Capivara","Tartaruga"
+],
+
+"⚽ Esportes":[
+"Futebol","Basquete","Vôlei","Tênis","Natação","Surf","Judô","Jiu-Jitsu","Golfe","Handebol",
+"Ciclismo","Corrida","Skate","Patinação","Rugby","Beisebol","Hóquei","Boxe","Xadrez","Futsal"
+],
+
+"🎬 Filmes":[
+"Titanic","Avatar","Frozen","Shrek","Moana","Toy Story","Carros","Batman","Superman","Homem-Aranha",
+"Vingadores","Jurassic Park","Rei Leão","Procurando Nemo","Up","Divertida Mente","Harry Potter","Star Wars","Madagascar","Minions"
+],
+
+"📺 Séries":[
+"Friends","Breaking Bad","Dark","Round 6","The Office","Stranger Things","Lost","The Boys","Wandinha","Loki",
+"The Crown","La Casa de Papel","The Last of Us","Peaky Blinders","Bridgerton"
+],
+
+"💻 Tecnologia":[
+"Internet","Wi-Fi","Bluetooth","Notebook","Mouse","Teclado","Monitor","Drone","Robô","Satélite",
+"Pen Drive","HD","SSD","Impressora","Tablet","Smartwatch","Android","iPhone","GPS","Inteligência Artificial"
+],
+
+"🚗 Transportes":[
+"Carro","Moto","Ônibus","Avião","Helicóptero","Bicicleta","Navio","Trem","Metrô","Patinete",
+"Trator","Caminhão","Barco","Jet Ski","Foguete"
+],
+
+"👔 Profissões":[
+"Médico","Professor","Engenheiro","Arquiteto","Biomédico","Dentista","Veterinário","Policial","Bombeiro","Piloto",
+"Enfermeiro","Cozinheiro","Padeiro","Jornalista","Programador","Mecânico","Pintor","Eletricista","Advogado","Fotógrafo"
+]
+
+};
+
+let jogadores=[];
+let jogadorAtual=0;
+let camaleao=0;
+let categoria="";
+let palavra="";
+let primeiro=0;
+
+criarCampos();
+
+document.getElementById("qtd").addEventListener("change",criarCampos);
+
+function criarCampos(){
+
+    const n=Number(document.getElementById("qtd").value);
+
+    let html="";
+
+    for(let i=1;i<=n;i++){
+
+        html+=`<input id="j${i}" value="Jogador ${i}">`;
+
+    }
+
+    document.getElementById("nomes").innerHTML=html;
+
+}
+
+function aleatorio(max){
+
+    return Math.floor(Math.random()*max);
+
+}
+
+function iniciar(){
+
+    jogadores=[];
+
+    const n=Number(document.getElementById("qtd").value);
+
+    for(let i=1;i<=n;i++){
+
+        jogadores.push(
+
+            document.getElementById("j"+i).value
+
+        );
+
+    }
+
+    camaleao=aleatorio(n);
+
+    primeiro=aleatorio(n);
+
+    const categorias = [];
+
+document.querySelectorAll(".cat").forEach(c=>{
+
+    if(c.checked){
+
+        categorias.push(c.value);
+
+    }
+
+});
+
+if(categorias.length===0){
+
+    alert("Selecione pelo menos uma categoria.");
+
+    return;
+
+}
+
+    categoria=categorias[aleatorio(categorias.length)];
+
+    const palavras=banco[categoria];
+
+    palavra=palavras[aleatorio(palavras.length)];
+
+    jogadorAtual=0;
+
+    document.getElementById("setup").classList.add("hidden");
+
+    document.getElementById("passar").classList.remove("hidden");
+
+    atualizarJogador();
+
+}
+
+function atualizarJogador(){
+
+    document.getElementById("nomeAtual").innerText=
+
+    jogadores[jogadorAtual];
+
+}
+
+function mostrar(){
+
+    document.getElementById("passar").classList.add("hidden");
+
+    document.getElementById("ver").classList.remove("hidden");
+
+    document.getElementById("categoria").innerHTML=
+
+    "<b>"+categoria+"</b>";
+
+    if(jogadorAtual===camaleao){
+
+        document.getElementById("palavra").innerHTML=
+
+        "🦎<br>VOCÊ É O CAMALEÃO";
+
+    }
+
+    else{
+
+        document.getElementById("palavra").innerHTML=
+
+        palavra;
+
+    }
+
+}
+
+function proximo(){
+
+    jogadorAtual++;
+
+    if(jogadorAtual<jogadores.length){
+
+        document.getElementById("ver").classList.add("hidden");
+
+        document.getElementById("passar").classList.remove("hidden");
+
+        atualizarJogador();
+
+    }
+
+    else{
+
+        document.getElementById("ver").classList.add("hidden");
+
+        document.getElementById("fim").classList.remove("hidden");
+
+        document.getElementById("inicioRodada").innerHTML=
+
+        jogadores[primeiro]+" começa!";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+function novaRodada(){
+
+    camaleao = aleatorio(jogadores.length);
+
+    primeiro = aleatorio(jogadores.length);
+
+    const categorias = Object.keys(banco);
+
+    categoria = categorias[aleatorio(categorias.length)];
+
+    const palavras = banco[categoria];
+
+    do{
+
+        palavra = palavras[aleatorio(palavras.length)];
+
+    }while(palavra===ultimaPalavra && palavras.length>1);
+
+    ultimaPalavra = palavra;
+
+    jogadorAtual = 0;
+
+    document.getElementById("fim").classList.add("hidden");
+
+    document.getElementById("passar").classList.remove("hidden");
+
+    atualizarJogador();
+
+}
